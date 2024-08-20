@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public static class VectorUtilities {
@@ -24,5 +25,12 @@ public static class VectorUtilities {
         }
         float y = (-planeNormal.x * dir.x - planeNormal.z * dir.z) / planeNormal.y;
         return new Vector3(dir.x, y, dir.z).normalized;
+    }
+    public static Vector2 ProjectOnVector(this Vector2 a, Vector2 v) {
+        return v.normalized * Vector2.Dot(a, v);
+    }
+
+    public static Vector2 ProjectOnNormal(this Vector2 v, Vector2 n) {
+        return v.ProjectOnVector(Vector2.Perpendicular(n));
     }
 }

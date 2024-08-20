@@ -42,7 +42,14 @@ public static class PhysicsUtilities {
         }
         return bounds[0];
     }
-
+    
+    public static Bounds GetBounds(this Rigidbody2D rb) {
+        var bounds = rb.GetComponentsInChildren<Collider2D>().Where(x => !x.isTrigger).Select(x => x.bounds).ToArray();
+        for (int i = 1; i < bounds.Count(); i++) {
+            bounds[0].Encapsulate(bounds[i]);
+        }
+        return bounds[0];
+    }
     public static Collider[] OverlapAll(this CapsuleCollider cc, Vector3 position) {
         GetCapsulePoints(cc, out Vector3 a, out Vector3 b, out float radius, out _);
         Vector3 colliderDelta = position - cc.transform.position;

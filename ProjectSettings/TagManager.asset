@@ -41,3 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: In the distance
+    uniqueID: 1413800143
+    locked: 0
+  - name: The wall
+    uniqueID: 3998522251
+    locked: 0
+  - name: Objects on the wall
+    uniqueID: 1170989097
+    locked: 0
+  - name: Rain
+    uniqueID: 2265274971
+    locked: 0
+  - name: HUD
+    uniqueID: 3119803859
+    locked: 0

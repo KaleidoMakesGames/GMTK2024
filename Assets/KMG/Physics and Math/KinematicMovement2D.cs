@@ -114,33 +114,22 @@ public static class KinematicMovement2D {
         }
     }
 
-    public enum IntersectionResolutionResult { NONE, RESOLVED, FAILED }
-    public static IntersectionResolutionResult ResolveIntersections(KinematicCollider collider, ref Vector2 position, int maxIterations = 5, Func<Collider2D, bool> isObstacleFunc = null) {
-        for (int i = 0; i < maxIterations; i++) {
-            bool intersectionDetected = false;
+    public enum IntersectionResolutionResult { NONE, INTERSECTED }
+    public static IntersectionResolutionResult ResolveIntersections(KinematicCollider collider, ref Vector2 position, Func<Collider2D, bool> isObstacleFunc = null) {
+        var overlaps = new List<Collider2D>();
+        collider.rb.Overlap(position, 0, overlaps);
 
-            var overlaps = new List<Collider2D>();
-            collider.rb.Overlap(position, 0, overlaps);
-
-            overlaps = overlaps.Where(x => !x.isTrigger && x.attachedRigidbody != collider.rb && (
-            isObstacleFunc == null || isObstacleFunc(x))).ToList();
-            if (overlaps.Count > 0) {
-                var overlapCollider = overlaps[0];
-                // Need to resolve the overlap
-                foreach (var attachedCollider in collider.rb.GetComponents<Collider2D>()) {
-                    var d = Physics2D.Distance(attachedCollider, position, attachedCollider.transform.rotation.z,
-                        overlapCollider, overlapCollider.transform.position, overlapCollider.transform.rotation.z);
-                    if(d.isOverlapped) {
-                        position += (d.distance + collider.skinWidth) * d.normal;
-                        intersectionDetected = true;
-                        break;
-                    }
-                }
-            }
-            if (!intersectionDetected) {
-                return i == 0 ? IntersectionResolutionResult.NONE : IntersectionResolutionResult.RESOLVED;
+        overlaps = overlaps.Where(x => !x.isTrigger && x.attachedRigidbody != collider.rb && (
+        isObstacleFunc == null || isObstacleFunc(x))).ToList();
+        if (overlaps.Count > 0) {
+            var overlapCollider = overlaps[0];
+            // Need to resolve the overlap
+            var d = collider.rb.Distance(overlapCollider);
+            if(d.isOverlapped) {
+                position += (d.distance - collider.skinWidth) * d.normal;
+                return IntersectionResolutionResult.INTERSECTED;
             }
         }
-        return IntersectionResolutionResult.FAILED;
+        return IntersectionResolutionResult.NONE;
     }
 }
